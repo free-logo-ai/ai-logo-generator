@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Logo Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: auto;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #e68900;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+            display: none;
+        }
+        .loading {
+            display: none;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Logo Generator</h1>
+    <div class="container">
+        <p>Describe your logo:</p>
+        <input type="text" id="logoPrompt" placeholder="e.g. Futuristic AI logo">
+        <br>
+        <button onclick="generateLogo()">Generate Logo</button>
+        <p class="loading">Generating logo... Please wait ⏳</p>
+        <br>
+        <img id="logo" src="" alt="Your AI-Generated Logo">
+        <br>
+        <a id="downloadLink" style="display: none;" download="AI_Logo.png">
+            <button>Download Logo</button>
+        </a>
+    </div>
+
+    <script>
+    async function generateLogo() {
+        const apiKey = "YOUR_OPENAI_API_KEY"; // Replace with your OpenAI API key
+        const userPrompt = document.getElementById("logoPrompt").value;
+        const prompt = userPrompt ? userPrompt : "Minimalist AI logo with modern design";
+
+        document.querySelector(".loading").style.display = "block";
+        document.getElementById("logo").style.display = "none";
+        document.getElementById("downloadLink").style.display = "none";
+
+        let response = await fetch("https://api.openai.com/v1/images/generations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "dall-e-2",
+                prompt: prompt,
+                n: 1,
+                size: "512x512"
+            })
+        });
+
+        let data = await response.json();
+        document.getElementById("logo").src = data.data[0].url;
+        document.querySelector(".loading").style.display = "none";
+        document.getElementById("logo").style.display = "block";
+        document.getElementById("downloadLink").href = data.data[0].url;
+        document.getElementById("downloadLink").style.display = "block";
+    }
+    </script>
+</body>
+</html>
